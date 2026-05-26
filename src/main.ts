@@ -158,16 +158,20 @@ export const tmdbApi = process.env.TMDB_KEY && process.env.TMDB_KEY;
       });
     });
 
-    fastify.listen({ port: PORT, host: '0.0.0.0' }, (e, address) => {
-      if (e) throw e;
-      console.log(`server listening on ${address}`);
-    });
+    // Se estiver a correr na Vercel, NÃO chama o .listen()
+    if (!process.env.VERCEL) {
+      fastify.listen({ port: PORT, host: '0.0.0.0' }, (e, address) => {
+        if (e) throw e;
+        console.log(`server listening on ${address}`);
+      });
+    }
   } catch (err: any) {
     fastify.log.error(err);
     process.exit(1);
   }
 })();
+
 export default async function handler(req: any, res: any) {
-  await fastify.ready()
-  fastify.server.emit('request', req, res)
+  await fastify.ready();
+  fastify.server.emit('request', req, res);
 }
